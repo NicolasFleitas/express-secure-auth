@@ -3,8 +3,19 @@ const router = express.Router()
 const authController = require('../controllers/authController')
 const authenticateToken = require('../middlewares/authMiddleware')
 const { authLimiter } = require('../middlewares/rateLimiter')
+const { doubleCsrfProtection, generateToken } = require('../middlewares/csrfMiddleware')
+const { validateRegister } = require('../middlewares/validatorMiddleWare')
 
-router.post('/register', authLimiter, authController.register)
+router.get('/csrf-token', (req, res) => {
+    res.json({ csrfToken: generateToken(req, res) })
+})
+
+router.post('/register',
+    doubleCsrfProtection,
+    validateRegister,
+    authLimiter,
+    authController.register
+)
 router.post('/login', authLimiter, authController.login)
 
 // Ruta de prueba protegida
