@@ -2,16 +2,18 @@ const { doubleCsrf } = require('csrf-csrf')
 
 const {
     doubleCsrfProtection,
-    generateToken,
+    generateCsrfToken,
 } = doubleCsrf({
     getSecret: () => process.env.CSRF_SECRET,
+    // v4 requiere getSessionIdentifier para construir el HMAC del token
+    getSessionIdentifier: (req) => req.ip ?? 'anonymous',
     cookieName: "x-csrf-token",
     cookieOptions: {
         httpOnly: true,
         sameSite: "strict",
         secure: process.env.NODE_ENV === "production",
     },
-    getTokenFromRequest: (req) => req.headers["x-csrf-token"], // El cliente lo envía aqui
+    getCsrfTokenFromRequest: (req) => req.headers["x-csrf-token"], // El cliente lo envía aquí
 })
 
-module.exports = { doubleCsrfProtection, generateToken }
+module.exports = { doubleCsrfProtection, generateCsrfToken }

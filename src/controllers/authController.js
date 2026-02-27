@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const pool = require('../config/db')
+const { encrypt } = require('../utils/cryptoUtils')
 
 exports.register = async (req, res) => {
     const { email, password } = req.body
@@ -27,15 +28,16 @@ exports.login = async (req, res) => {
             res.status(401).json({ error: "Crendenciales inválidas" })
         }
 
-        // Generación del JWT
-        const payload = {
-            id: user.id,
-            email: user.email,
-            role: user.role
-        }
+        // Ciframos los datos sensibles
+        const secureId = encrypt(user.id.toString())
+        const secureEmail = encrypt(user.email)
 
         const token = jwt.sign(
-            payload,
+            {
+                sub: secureId,
+                mail: secureEmail,
+                role: user.role
+            },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         )

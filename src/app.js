@@ -1,10 +1,12 @@
 const express = require('express')
 const helmet = require('helmet')
+const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
 
 const app = express()
 app.use(helmet())
+app.use(cookieParser())
 app.use(express.json())
 
 // Prefijo para todas las rutas de auth

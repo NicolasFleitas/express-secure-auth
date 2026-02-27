@@ -3,11 +3,11 @@ const router = express.Router()
 const authController = require('../controllers/authController')
 const authenticateToken = require('../middlewares/authMiddleware')
 const { authLimiter } = require('../middlewares/rateLimiter')
-const { doubleCsrfProtection, generateToken } = require('../middlewares/csrfMiddleware')
+const { doubleCsrfProtection, generateCsrfToken } = require('../middlewares/csrfMiddleware')
 const { validateRegister } = require('../middlewares/validatorMiddleWare')
 
 router.get('/csrf-token', (req, res) => {
-    res.json({ csrfToken: generateToken(req, res) })
+    res.json({ csrfToken: generateCsrfToken(req, res) })
 })
 
 router.post('/register',
