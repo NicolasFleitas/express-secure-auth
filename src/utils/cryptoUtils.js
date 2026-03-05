@@ -8,7 +8,7 @@ function encrypt(text) {
     const iv = crypto.randomBytes(IV_LENGTH)
     const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv)
     let encrypted = cipher.update(text)
-    encrypted = Buffer.concat([encrypt, cipher.final()])
+    encrypted = Buffer.concat([encrypted, cipher.final()])
     return iv.toString('hex') + ':' + encrypted.toString('hex')
 }
 
