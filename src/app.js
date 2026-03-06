@@ -21,4 +21,12 @@ app.set('views', path.join(__dirname, 'views'))
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 
+// Redirigir la raíz al login o al perfil si ya está autenticado
+app.get('/', (req, res) => {
+    if (req.cookies.session_token) {
+        return res.redirect('/api/auth/profile')
+    }
+    res.redirect('/api/auth/login')
+})
+
 module.exports = app

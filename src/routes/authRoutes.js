@@ -15,6 +15,11 @@ router.get('/login', (req, res) => {
     res.render('login', { csrfToken: token })
 })
 
+router.get('/register', (req, res) => {
+    const token = generateCsrfToken(req, res)
+    res.render('register', { csrfToken: token })
+})
+
 router.post('/register',
     doubleCsrfProtection,
     validateRegister,
