@@ -1,17 +1,14 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const pool = require('../config/db')
+const User = require('../models/User')
 const { encrypt } = require('../utils/cryptoUtils')
 
 exports.register = async (req, res) => {
     const { email, password } = req.body
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
-        const result = await pool.query(
-            'INSERT INTO users (email, password_hash) values ($1, $2) RETURNING id, email, role',
-            [email, hashedPassword]
-        )
-        res.status(201).json(result.rows[0])
+        const newUser = await User.create(email, hashedPassword)
+        res.status(201).json(newUser)
     } catch (error) {
         res.status(500).json({ error: "Error al registrar usuario" })
     }
@@ -21,11 +18,10 @@ exports.login = async (req, res) => {
     const { email, password } = req.body
 
     try {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-        const user = result.rows[0]
+        const user = await User.findByEmail(email)
 
-        if (!user && !(await bcrypt.compare(password, user.password_hash))) {
-            res.status(401).json({ error: "Crendenciales inválidas" })
+        if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+            return res.status(401).json({ error: "Crendenciales inválidas" })
         }
 
         // Ciframos los datos sensibles

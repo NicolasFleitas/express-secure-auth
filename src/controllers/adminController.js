@@ -1,9 +1,9 @@
-const pool = require('../config/db')
+const User = require('../models/User')
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, email, role, created_at FROM users')
-        res.json({ users: result.rows })
+        const users = await User.findAll()
+        res.json({ users })
     } catch (error) {
         res.status(500).json({ error: "Error al obtener usuarios" })
     }
@@ -13,9 +13,13 @@ exports.deleteUser = async (req, res) => {
     const { id } = req.params
 
     try {
-        await pool.query('DELETE FROM users WHERE id = $1', [id])
+        const deleted = await User.deleteById(id)
 
-        res.json({ message: `Usuario con ID ${id} eliminado correctamente` })
+        if (deleted) {
+            res.json({ message: `Usuario con ID ${id} eliminado correctamente` })
+        } else {
+            res.status(404).json({ error: "Usuario no encontrado" })
+        }
     } catch (error) {
         res.status(500).json({ error: "Error al eliminar usuario" })
     }
