@@ -47,19 +47,22 @@ exports.login = async (req, res) => {
             }
         }
 
-        // Gestión de Sesiones según la elección del usuario
-        if (sessionType === 'cookie') {
-            // Sesiones Persistentes (Usando Cookies)
-            res.cookie('session_token', token, {
-                httpOnly: true, // Protege contra XSS
-                secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
-                sameSite: 'strict', // Protege contra CSRF
-                maxAge: 3600000 // 1 hora
-            })
-        } else {
-            // Sesiones sin Estado (Usando JWT puro en la respuesta)
-            responseData.token = token
+        const cookieOptions = {
+            httpOnly: true, // Protege contra XSS
+            secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+            sameSite: 'strict', // Protege contra CSRF
         }
+
+        // Si el usuario elige 'cookie' (persistente), le damos una duración de 1 hora
+        // Si elige 'jwt' (sesión), no ponemos maxAge para que sea una cookie de sesión
+        if (sessionType === 'cookie') {
+            cookieOptions.maxAge = 3600000 // 1 hora
+        }
+
+        res.cookie('session_token', token, cookieOptions)
+
+        // Siempre devolvemos el token en el JSON por si el cliente lo necesita (ej. localStorage)
+        responseData.token = token
 
         return res.json(responseData)
 

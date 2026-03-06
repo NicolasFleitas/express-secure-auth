@@ -10,6 +10,11 @@ router.get('/csrf-token', (req, res) => {
     res.json({ csrfToken: generateCsrfToken(req, res) })
 })
 
+router.get('/login', (req, res) => {
+    const token = generateCsrfToken(req, res)
+    res.render('login', { csrfToken: token })
+})
+
 router.post('/register',
     doubleCsrfProtection,
     validateRegister,
@@ -19,9 +24,9 @@ router.post('/register',
 router.post('/login', doubleCsrfProtection, validateLogin, authLimiter, authController.login)
 router.post('/logout', authController.logout)
 
-// Ruta de prueba protegida
+// Ruta de perfil protegida (Vista)
 router.get('/profile', authenticateToken, (req, res) => {
-    res.json({ user: req.user })
+    res.render('profile', { user: req.user })
 })
 
 module.exports = router
