@@ -3,9 +3,10 @@ const { decrypt } = require('../utils/cryptoUtils')
 
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
+    // Buscamos el token en la cabecera Authorization O en la cookie session_token
+    const token = (authHeader && authHeader.split(' ')[1]) || req.cookies.session_token
 
-    if (!token) return res.status(401).json({ error: "Acceso denegado" })
+    if (!token) return res.status(401).json({ error: "Acceso denegado. Se requiere token o sesión activa." })
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) return res.status(403).json({ error: "Token inválido" })

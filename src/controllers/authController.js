@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password, sessionType } = req.body
 
     try {
         const user = await User.findByEmail(email)
@@ -35,28 +35,41 @@ exports.login = async (req, res) => {
                 role: user.role
             },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '15m' } // 15 minutos
         )
 
-        // Confuguración de la Cookie Segura
-        res.cookie('session_token', token, {
-            httpOnly: true, // Protege contra XSS (JS no puede leerla)
-            secure: 'strict', // Protege contra CSRF
-            maxAge: 3600000 // 1 hora en milisegundos
-        })
-
-        return res.json({
+        const responseData = {
             message: "Login exitoso",
-            token,
             user: {
                 id: user.id,
                 email: user.email,
                 role: user.role
             }
-        })
+        }
+
+        // Gestión de Sesiones según la elección del usuario
+        if (sessionType === 'cookie') {
+            // Sesiones Persistentes (Usando Cookies)
+            res.cookie('session_token', token, {
+                httpOnly: true, // Protege contra XSS
+                secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+                sameSite: 'strict', // Protege contra CSRF
+                maxAge: 3600000 // 1 hora
+            })
+        } else {
+            // Sesiones sin Estado (Usando JWT puro en la respuesta)
+            responseData.token = token
+        }
+
+        return res.json(responseData)
 
     } catch (error) {
         console.error("Login Error: ", error)
         res.status(500).json({ error: "Error interno en el servidor" })
     }
+}
+
+exports.logout = (req, res) => {
+    res.clearCookie('session_token')
+    res.json({ message: "Sesión cerrada correctamente" })
 }
