@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const LoginAttempt = require('../models/LoginAttempt')
 const { encrypt } = require('../utils/cryptoUtils')
 
 exports.register = async (req, res) => {
@@ -21,8 +22,11 @@ exports.login = async (req, res) => {
         const user = await User.findByEmail(email)
 
         if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+            await LoginAttempt.create(email, req.ip, false)
             return res.status(401).json({ error: "Crendenciales inválidas" })
         }
+
+        await LoginAttempt.create(email, req.ip, true)
 
         // Ciframos los datos sensibles
         const secureId = encrypt(user.id.toString())
