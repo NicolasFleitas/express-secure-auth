@@ -1,3 +1,5 @@
+import { FormUtils } from './form-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
@@ -11,10 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         // UI state
-        messageDiv.style.display = 'none';
-        messageDiv.className = 'message';
-        loader.style.display = 'inline-block';
-        submitBtn.disabled = true;
+        FormUtils.setLoading({ submitBtn, loader, messageDiv }, true);
 
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -33,9 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                messageDiv.textContent = '¡Login exitoso! Redirigiendo...';
-                messageDiv.classList.add('success');
-                messageDiv.style.display = 'block';
+                FormUtils.showMessage(messageDiv, '¡Login exitoso! Redirigiendo...', 'success');
 
                 if (sessionType === 'jwt' && data.token) {
                     localStorage.setItem('token', data.token);
@@ -46,18 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/api/auth/profile';
                 }, 1500);
             } else {
-                messageDiv.textContent = data.error || 'Ocurrió un error al iniciar sesión';
-                messageDiv.classList.add('error');
-                messageDiv.style.display = 'block';
+                FormUtils.showMessage(messageDiv, data.error || 'Ocurrió un error al iniciar sesión', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            messageDiv.textContent = 'Error de conexión con el servidor';
-            messageDiv.classList.add('error');
-            messageDiv.style.display = 'block';
+            FormUtils.showMessage(messageDiv, 'Error de conexión con el servidor', 'error');
         } finally {
-            loader.style.display = 'none';
-            submitBtn.disabled = false;
+            FormUtils.setLoading({ submitBtn, loader }, false);
         }
     });
 });

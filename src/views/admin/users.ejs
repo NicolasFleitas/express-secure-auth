@@ -2,13 +2,8 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración | The Huddle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/admin.css">
-    <meta name="csrf-token" content="<%= csrfToken %>">
+    <%- include('../partials/head', { title: 'Panel de Administración' , extraStyles: ['/css/admin.css'], csrfToken:
+        csrfToken }) %>
 </head>
 
 <body>
@@ -25,103 +20,92 @@
             </div>
         </header>
 
-        <% if (message) { %>
-            <div class="message success" style="display: block; margin-bottom: 20px;">
-                <%= message %>
-            </div>
-            <% } %>
+        <%- include('../partials/messages', { message: message, error: error }) %>
 
-                <% if (error) { %>
-                    <div class="message error" style="display: block; margin-bottom: 20px;">
-                        <%= error %>
-                    </div>
-                    <% } %>
+            <section class="section-card">
+                <h2 class="section-title">
+                    <span>👥</span> Gestión de Usuarios
+                </h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>ID</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach(u=> { %>
+                                <tr>
+                                    <td>
+                                        <%= u.email %>
+                                    </td>
+                                    <td>
+                                        <span class="role-badge" style="margin-bottom: 0;">
+                                            <%= u.role %>
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-muted); font-family: monospace;">
+                                        <%= u.id %>
+                                    </td>
+                                    <td>
+                                        <% if (u.id !==user.id) { %>
+                                            <button class="delete-btn" data-user-id="<%= u.id %>">Eliminar</button>
+                                            <% } else { %>
+                                                <span
+                                                    style="color: var(--text-muted); font-style: italic; font-size: 12px;">(Tú)</span>
+                                                <% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-                        <section class="section-card">
-                            <h2 class="section-title">
-                                <span>👥</span> Gestión de Usuarios
-                            </h2>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Email</th>
-                                            <th>Rol</th>
-                                            <th>ID</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% users.forEach(u=> { %>
-                                            <tr>
-                                                <td>
-                                                    <%= u.email %>
-                                                </td>
-                                                <td>
-                                                    <span class="role-badge" style="margin-bottom: 0;">
-                                                        <%= u.role %>
-                                                    </span>
-                                                </td>
-                                                <td style="color: var(--text-muted); font-family: monospace;">
-                                                    <%= u.id %>
-                                                </td>
-                                                <td>
-                                                    <% if (u.id !==user.id) { %>
-                                                        <button class="delete-btn"
-                                                            onclick="deleteUser('<%= u.id %>')">Eliminar</button>
-                                                        <% } else { %>
-                                                            <span
-                                                                style="color: var(--text-muted); font-style: italic; font-size: 12px;">(Tú)</span>
-                                                            <% } %>
-                                                </td>
-                                            </tr>
-                                            <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-
-                        <section class="section-card">
-                            <h2 class="section-title">
-                                <span>🛡️</span> Intentos de Inicio de Sesión
-                            </h2>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Email</th>
-                                            <th>IP</th>
-                                            <th>Fecha</th>
-                                            <th>Resultado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% loginAttempts.forEach(attempt=> { %>
-                                            <tr>
-                                                <td>
-                                                    <%= attempt.email %>
-                                                </td>
-                                                <td>
-                                                    <%= attempt.ip_address %>
-                                                </td>
-                                                <td>
-                                                    <%= new Date(attempt.created_at).toLocaleString() %>
-                                                </td>
-                                                <td>
-                                                    <span
-                                                        class="status-badge <%= attempt.success ? 'status-success' : 'status-failed' %>">
-                                                        <%= attempt.success ? 'EXITOSO' : 'FALLIDO' %>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
+            <section class="section-card">
+                <h2 class="section-title">
+                    <span>🛡️</span> Intentos de Inicio de Sesión
+                </h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>IP</th>
+                                <th>Fecha</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% loginAttempts.forEach(attempt=> { %>
+                                <tr>
+                                    <td>
+                                        <%= attempt.email %>
+                                    </td>
+                                    <td>
+                                        <%= attempt.ip_address %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(attempt.created_at).toLocaleString() %>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="status-badge <%= attempt.success ? 'status-success' : 'status-failed' %>">
+                                            <%= attempt.success ? 'EXITOSO' : 'FALLIDO' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
     </div>
 
-    <script src="/js/admin.js"></script>
+    <script type="module" src="/js/admin.js"></script>
 </body>
 
 </html>

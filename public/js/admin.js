@@ -1,3 +1,13 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Event delegation for delete buttons
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const userId = e.target.getAttribute('data-user-id');
+            await deleteUser(userId);
+        }
+    });
+});
+
 async function deleteUser(userId) {
     if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
         return;

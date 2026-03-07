@@ -1,3 +1,5 @@
+import { FormUtils } from './form-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
     const messageDiv = document.getElementById('message');
@@ -16,17 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // basic validation
         if (password !== confirmPassword) {
-            messageDiv.textContent = 'Las contraseñas no coinciden';
-            messageDiv.className = 'message error';
-            messageDiv.style.display = 'block';
+            FormUtils.showMessage(messageDiv, 'Las contraseñas no coinciden', 'error');
             return;
         }
 
         // UI state
-        messageDiv.style.display = 'none';
-        messageDiv.className = 'message';
-        loader.style.display = 'inline-block';
-        submitBtn.disabled = true;
+        FormUtils.setLoading({ submitBtn, loader, messageDiv }, true);
 
         try {
             const response = await fetch('/api/auth/register', {
@@ -41,26 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                messageDiv.textContent = '¡Registro exitoso! Redirigiendo al login...';
-                messageDiv.classList.add('success');
-                messageDiv.style.display = 'block';
+                FormUtils.showMessage(messageDiv, '¡Registro exitoso! Redirigiendo al login...', 'success');
 
                 setTimeout(() => {
                     window.location.href = '/api/auth/login';
                 }, 2000);
             } else {
-                messageDiv.textContent = data.error || 'Ocurrió un error al registrarse';
-                messageDiv.classList.add('error');
-                messageDiv.style.display = 'block';
+                FormUtils.showMessage(messageDiv, data.error || 'Ocurrió un error al registrarse', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            messageDiv.textContent = 'Error de conexión con el servidor';
-            messageDiv.classList.add('error');
-            messageDiv.style.display = 'block';
+            FormUtils.showMessage(messageDiv, 'Error de conexión con el servidor', 'error');
         } finally {
-            loader.style.display = 'none';
-            submitBtn.disabled = false;
+            FormUtils.setLoading({ submitBtn, loader }, false);
         }
     });
 });
