@@ -64,7 +64,8 @@ exports.login = async (req, res) => {
         }
 
         res.cookie('session_token', token, cookieOptions)
-
+        // Devolvemos el token también en el JSON para clientes API y scripts de prueba
+        responseData.token = token
         return res.json(responseData)
 
     } catch (error) {
@@ -75,5 +76,6 @@ exports.login = async (req, res) => {
 
 exports.logout = (req, res) => {
     res.clearCookie('session_token')
+    res.clearCookie('x-csrf-token')
     res.json({ message: "Sesión cerrada correctamente" })
 }

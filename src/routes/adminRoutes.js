@@ -3,10 +3,11 @@ const router = express.Router()
 const adminController = require('../controllers/adminController')
 const authenticateToken = require('../middlewares/authMiddleware')
 const authorizeRoles = require('../middlewares/roleMiddleware')
+const { apiLimiter } = require('../middlewares/rateLimiter')
 const { doubleCsrfProtection } = require('../middlewares/csrfMiddleware')
 
 // Solo los Administradores pueden acceder a estas rutas
-// Primero verifica que el token sea valido, LUEGO el rol
+router.use(apiLimiter)
 
 router.get('/users',
     authenticateToken,

@@ -4,7 +4,7 @@ const authController = require('../controllers/authController')
 const authenticateToken = require('../middlewares/authMiddleware')
 const { authLimiter, apiLimiter } = require('../middlewares/rateLimiter')
 const { doubleCsrfProtection, generateCsrfToken } = require('../middlewares/csrfMiddleware')
-const { validateRegister, validateLogin } = require('../middlewares/validatorMiddleWare')
+const { validateRegister, validateLogin } = require('../middlewares/validatorMiddleware')
 
 // Limite general para todas las rutas (protección contra saturación)
 router.use(apiLimiter)

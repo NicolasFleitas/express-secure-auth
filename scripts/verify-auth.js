@@ -87,7 +87,10 @@ async function runTests() {
         console.log('8. Verificando Logout...');
         const logoutRes = await fetch(`${baseURL}/auth/logout`, {
             method: 'POST',
-            headers: { 'Cookie': sessionCookie }
+            headers: {
+                'Cookie': `${csrfCookie}; ${sessionCookie}`,
+                'x-csrf-token': csrfToken
+            }
         });
         const logoutSetCookie = logoutRes.headers.get('set-cookie');
         console.log('Logout exitoso. Cookie de sesión eliminada:', logoutSetCookie && logoutSetCookie.includes('Expires=Thu, 01 Jan 1970') ? 'SÍ' : 'NO');
