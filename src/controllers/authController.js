@@ -65,9 +65,6 @@ exports.login = async (req, res) => {
 
         res.cookie('session_token', token, cookieOptions)
 
-        // Siempre devolvemos el token en el JSON por si el cliente lo necesita (ej. localStorage)
-        responseData.token = token
-
         return res.json(responseData)
 
     } catch (error) {

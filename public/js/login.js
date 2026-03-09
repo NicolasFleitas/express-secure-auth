@@ -34,11 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 FormUtils.showMessage(messageDiv, '¡Login exitoso! Redirigiendo...', 'success');
 
-                if (sessionType === 'jwt' && data.token) {
-                    localStorage.setItem('token', data.token);
-                    console.log('Token JWT guardado:', data.token);
-                }
-
                 setTimeout(() => {
                     window.location.href = '/api/auth/profile';
                 }, 1500);

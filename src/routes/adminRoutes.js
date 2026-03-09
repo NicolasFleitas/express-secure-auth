@@ -15,9 +15,9 @@ router.get('/users',
 )
 
 router.delete('/users/:id',
+    doubleCsrfProtection,
     authenticateToken,
     authorizeRoles(['admin']),
-    doubleCsrfProtection,
     adminController.deleteUser
 )
 
