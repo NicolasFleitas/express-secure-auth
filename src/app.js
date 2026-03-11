@@ -17,8 +17,9 @@ app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
 // Prefijo para todas las rutas de auth
-
 app.use('/api/auth', authRoutes)
+
+// Prefijo para todas las rutas de admin
 app.use('/api/admin', adminRoutes)
 
 // Redirigir la raíz al login o al perfil si ya está autenticado

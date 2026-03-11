@@ -4,7 +4,12 @@ const { body, validationResult } = require('express-validator')
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
+        // Enviar tanto la lista completa como el primer error como 'error' para compatibilidad con el frontend
+        const errorList = errors.array()
+        return res.status(400).json({ 
+            error: errorList[0].msg, 
+            errors: errorList 
+        })
     }
     next()
 }
