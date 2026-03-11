@@ -32,6 +32,10 @@ exports.login = async (req, res) => {
         const secureId = encrypt(user.id.toString())
         const secureEmail = encrypt(user.email)
 
+        // Configuramos la duración de la sesión (ej: 1 hora)
+        const SESSION_DURATION_MS = 3600000 // 1 hora
+        const SESSION_DURATION_JWT = '1h'
+
         const token = jwt.sign(
             {
                 sub: secureId,
@@ -39,7 +43,7 @@ exports.login = async (req, res) => {
                 role: user.role
             },
             process.env.JWT_SECRET,
-            { expiresIn: '15m' } // 15 minutos
+            { expiresIn: SESSION_DURATION_JWT }
         )
 
         const responseData = {
@@ -57,10 +61,9 @@ exports.login = async (req, res) => {
             sameSite: 'strict', // Protege contra CSRF
         }
 
-        // Si el usuario elige 'cookie' (persistente), le damos una duración de 1 hora
-        // Si elige 'jwt' (sesión), no ponemos maxAge para que sea una cookie de sesión
+        // Si el usuario elige 'cookie' (persistente), sincronizamos la duración
         if (sessionType === 'cookie') {
-            cookieOptions.maxAge = 3600000 // 1 hora
+            cookieOptions.maxAge = SESSION_DURATION_MS
         }
 
         res.cookie('session_token', token, cookieOptions)
